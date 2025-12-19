@@ -3,36 +3,36 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/julianromli/opencode-template.svg?style=social&label=Star)](https://github.com/julianromli/opencode-template)
 
-> Template project untuk OpenCode - Platform pengembangan AI yang powerful dan fleksibel
+> Template project for OpenCode - A powerful and flexible AI development platform
 
-## 📖 Deskripsi
+## 📖 Description
 
-OpenCode Template adalah template project yang menyediakan struktur dasar untuk pengembangan aplikasi dengan OpenCode. Template ini dirancang untuk memberikan starting point yang solid dengan konfigurasi yang sudah dioptimalkan dan dokumentasi yang lengkap.
+OpenCode Template is a project template that provides a foundational structure for developing applications with OpenCode. This template is designed to give you a solid starting point with optimized configurations and comprehensive documentation.
 
-## ✨ Fitur
+## ✨ Features
 
-- 🚀 **Struktur Project yang Terorganisir** - Layout folder yang clean dan maintainable
-- 🔧 **Konfigurasi yang Sudah Dioptimalkan** - Settings default yang siap pakai
-- 📚 **Dokumentasi Lengkap** - Panduan lengkap untuk pengembangan
-- 🛡️ **Best Practices** - Mengikuti standar industri untuk keamanan dan performa
-- 🔄 **Easy Deployment** - Siap untuk deployment ke berbagai platform
+- 🚀 **Well-Organized Project Structure** - Clean and maintainable folder layout
+- 🔧 **Optimized Configuration** - Ready-to-use default settings
+- 📚 **Comprehensive Documentation** - Complete development guide
+- 🛡️ **Best Practices** - Following industry standards for security and performance
+- 🔄 **Easy Deployment** - Ready for deployment to various platforms
 
-## 🏗️ Struktur Project
+## 🏗️ Project Structure
 
 ```
 opencode/
-├── agent/                  # Agent definitions dan konfigurasi
-├── opencode-docs/         # Dokumentasi OpenCode
+├── agent/                  # Agent definitions and configuration
+├── opencode-docs/         # OpenCode documentation
 ├── superpowers/           # Superpowers extensions
 ├── .gitignore            # Git ignore rules
-├── opencode.json         # Konfigurasi OpenCode
-├── package.json          # Dependencies dan scripts
-└── README.md            # Dokumentasi project
+├── opencode.json         # OpenCode configuration
+├── package.json          # Dependencies and scripts
+└── README.md            # Project documentation
 ```
 
 ## 🚀 Quick Start
 
-1. **Clone repository**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/julianromli/opencode-template.git
    cd opencode-template
@@ -40,34 +40,34 @@ opencode/
 
 2. **Install dependencies**
    ```bash
-   # Menggunakan npm
+   # Using npm
    npm install
    
-   # Menggunakan bun (recommended)
+   # Using bun (recommended)
    bun install
    ```
 
-3. **Konfigurasi environment**
+3. **Configure environment**
    ```bash
    # Copy environment file
    cp .env.example .env
    
-   # Edit konfigurasi sesuai kebutuhan
+   # Edit configuration as needed
    nano .env
    ```
 
-4. **Jalankan project**
+4. **Run the project**
    ```bash
    npm run dev
-   # atau
+   # or
    bun run dev
    ```
 
 ## 📦 Dependencies
 
 ### Main Dependencies
-- **OpenCode** - Platform AI development
-- **Bun** - Fast JavaScript runtime dan package manager
+- **OpenCode** - AI development platform
+- **Bun** - Fast JavaScript runtime and package manager
 
 ### Development Dependencies
 - **ESLint** - Code linting
@@ -82,7 +82,7 @@ opencode/
 # Development server
 npm run dev
 
-# Build untuk production
+# Build for production
 npm run build
 
 # Lint code
@@ -97,29 +97,29 @@ npm run typecheck
 
 ### Contributing
 
-1. Fork repository ini
-2. Buat feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buka Pull Request
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📋 Requirements
 
 - Node.js >= 18.0.0
-- npm >= 8.0.0 atau bun >= 1.0.0
+- npm >= 8.0.0 or bun >= 1.0.0
 - Git >= 2.30.0
 
-## 🔧 Konfigurasi
+## 🔧 Configuration
 
 ### OpenCode Configuration
 
-File `opencode.json` berisi konfigurasi utama OpenCode:
+The `opencode.json` file contains the main OpenCode configuration:
 
 ```json
 {
   "name": "opencode-template",
   "version": "1.0.0",
-  "description": "Template project untuk OpenCode",
+  "description": "Template project for OpenCode",
   "main": "index.js",
   "scripts": {
     "dev": "opencode dev",
@@ -131,21 +131,21 @@ File `opencode.json` berisi konfigurasi utama OpenCode:
 
 ### Environment Variables
 
-Buat file `.env` di root directory:
+Create a `.env` file in the root directory:
 
 ```env
 # OpenCode Configuration
 OPENCODE_ENV=development
 OPENCODE_PORT=3000
 
-# Database (jika diperlukan)
+# Database (if needed)
 DATABASE_URL=your_database_url_here
 
 # API Keys
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-## 📖 Dokumentasi Lengkap
+## 📖 Documentation
 
 - [OpenCode Documentation](https://opencode.ai/docs)
 - [API Reference](docs/api-reference.md)
@@ -154,7 +154,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ## 🐛 Troubleshooting
 
-Jika mengalami masalah, silakan cek:
+If you encounter any issues, please check:
 
 1. [Troubleshooting Guide](TROUBLESHOOTING.md)
 2. [Common Issues](docs/common-issues.md)
@@ -162,7 +162,7 @@ Jika mengalami masalah, silakan cek:
 
 ## 📄 License
 
-Distributed under the MIT License. Lihat [LICENSE](LICENSE) untuk informasi lebih lanjut.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## 👨‍💻 Author
 
@@ -173,12 +173,12 @@ Distributed under the MIT License. Lihat [LICENSE](LICENSE) untuk informasi lebi
 
 ## 🤝 Support
 
-Jika project ini bermanfaat, berikan ⭐️ di repository ini!
+If you find this project helpful, please give it a ⭐️ on this repository!
 
-Untuk support dan pertanyaan:
-- Buka [Issues](https://github.com/julianromli/opencode-template/issues)
-- Ikuti [@faizntfd](https://www.threads.com/@faizntfd) untuk update terbaru
+For support and questions:
+- Open an [Issue](https://github.com/julianromli/opencode-template/issues)
+- Follow [@faizntfd](https://www.threads.com/@faizntfd) for the latest updates
 
 ---
 
-Dibuat dengan ❤️ menggunakan OpenCode Template
+Built with ❤️ using OpenCode Template
