@@ -1,215 +1,327 @@
 /**
  * Superpowers plugin for OpenCode.ai
+ * VERSI: 2.0.0 (AUTO-ACTIVE - Antigravity & Thinking Compatible)
  *
- * Provides custom tools for loading and discovering skills,
- * with prompt generation for agent configuration.
+ * PERUBAHAN DARI v1.1.0:
+ * - Auto-active: Superpowers context otomatis tersedia di tool descriptions
+ * - Tidak menggunakan client.session.prompt() (penyebab error thinking)
+ * - Tools mengembalikan content langsung sebagai output
+ *
+ * KOMPATIBEL DENGAN:
+ * - Claude Opus/Sonnet Thinking models
+ * - Gemini models
+ * - OpenAI GPT models
  */
 
-import path from 'path';
-import fs from 'fs';
-import os from 'os';
-import { fileURLToPath } from 'url';
-import { tool } from '@opencode-ai/plugin/tool';
-import * as skillsCore from '../../lib/skills-core.js';
+import path from "path";
+import fs from "fs";
+import os from "os";
+import { tool } from "@opencode-ai/plugin/tool";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const homeDir = os.homedir();
+const superpowersDir = path.join(homeDir, ".config", "opencode", "superpowers");
+const skillsCoreModule = path.join(superpowersDir, "lib", "skills-core.js");
+
+let skillsCore = null;
+const loadSkillsCore = async () => {
+  if (!skillsCore) {
+    try {
+      skillsCore = await import(skillsCoreModule);
+    } catch (err) {
+      console.error("Failed to load skills-core.js:", err.message);
+      skillsCore = {
+        resolveSkillPath: () => null,
+        stripFrontmatter: (content) => content,
+        extractFrontmatter: () => ({}),
+        findSkillsInDir: () => [],
+      };
+    }
+  }
+  return skillsCore;
+};
+
+// Pre-load superpowers context for tool descriptions
+let superpowersContext = null;
+const getSuperpowersContext = async () => {
+  if (superpowersContext) return superpowersContext;
+
+  const core = await loadSkillsCore();
+  const superpowersSkillsDir = path.join(superpowersDir, "skills");
+  const personalSkillsDir = path.join(homeDir, ".config", "opencode", "skills");
+
+  const usingSuperpowersPath = core.resolveSkillPath(
+    "using-superpowers",
+    superpowersSkillsDir,
+    personalSkillsDir,
+  );
+  if (!usingSuperpowersPath) {
+    superpowersContext = "";
+    return superpowersContext;
+  }
+
+  try {
+    const fullContent = fs.readFileSync(usingSuperpowersPath.skillFile, "utf8");
+    superpowersContext = core.stripFrontmatter(fullContent);
+  } catch (err) {
+    superpowersContext = "";
+  }
+
+  return superpowersContext;
+};
+
+// Initialize context on module load
+getSuperpowersContext();
 
 export const SuperpowersPlugin = async ({ client, directory }) => {
-  const homeDir = os.homedir();
-  const projectSkillsDir = path.join(directory, '.opencode/skills');
-  // Derive superpowers skills dir from plugin location (works for both symlinked and local installs)
-  const superpowersSkillsDir = path.resolve(__dirname, '../../skills');
-  const personalSkillsDir = path.join(homeDir, '.config/opencode/skills');
+  const core = await loadSkillsCore();
+  const context = await getSuperpowersContext();
 
-  // Helper to generate bootstrap content
-  const getBootstrapContent = (compact = false) => {
-    const usingSuperpowersPath = skillsCore.resolveSkillPath('using-superpowers', superpowersSkillsDir, personalSkillsDir);
-    if (!usingSuperpowersPath) return null;
+  const projectSkillsDir = path.join(directory, ".opencode", "skills");
+  const superpowersSkillsDir = path.join(superpowersDir, "skills");
+  const personalSkillsDir = path.join(homeDir, ".config", "opencode", "skills");
 
-    const fullContent = fs.readFileSync(usingSuperpowersPath.skillFile, 'utf8');
-    const content = skillsCore.stripFrontmatter(fullContent);
+  // Build skills list for description
+  let skillsList = "";
+  try {
+    const projectSkills = core.findSkillsInDir(projectSkillsDir, "project", 3);
+    const personalSkills = core.findSkillsInDir(
+      personalSkillsDir,
+      "personal",
+      3,
+    );
+    const superpowersSkills = core.findSkillsInDir(
+      superpowersSkillsDir,
+      "superpowers",
+      3,
+    );
+    const allSkills = [
+      ...projectSkills,
+      ...personalSkills,
+      ...superpowersSkills,
+    ];
 
-    const toolMapping = compact
-      ? `**Tool Mapping:** TodoWrite->update_plan, Task->@mention, Skill->use_skill
-
-**Skills naming (priority order):** project: > personal > superpowers:`
-      : `**Tool Mapping for OpenCode:**
-When skills reference tools you don't have, substitute OpenCode equivalents:
-- \`TodoWrite\` → \`update_plan\`
-- \`Task\` tool with subagents → Use OpenCode's subagent system (@mention)
-- \`Skill\` tool → \`use_skill\` custom tool
-- \`Read\`, \`Write\`, \`Edit\`, \`Bash\` → Your native tools
-
-**Skills naming (priority order):**
-- Project skills: \`project:skill-name\` (in .opencode/skills/)
-- Personal skills: \`skill-name\` (in ~/.config/opencode/skills/)
-- Superpowers skills: \`superpowers:skill-name\`
-- Project skills override personal, which override superpowers when names match`;
-
-    return `<EXTREMELY_IMPORTANT>
-You have superpowers.
-
-**IMPORTANT: The using-superpowers skill content is included below. It is ALREADY LOADED - you are currently following it. Do NOT use the use_skill tool to load "using-superpowers" - that would be redundant. Use use_skill only for OTHER skills.**
-
-${content}
-
-${toolMapping}
-</EXTREMELY_IMPORTANT>`;
-  };
-
-  // Helper to inject bootstrap via session.prompt
-  const injectBootstrap = async (sessionID, compact = false) => {
-    const bootstrapContent = getBootstrapContent(compact);
-    if (!bootstrapContent) return false;
-
-    try {
-      await client.session.prompt({
-        path: { id: sessionID },
-        body: {
-          noReply: true,
-          parts: [{ type: "text", text: bootstrapContent, synthetic: true }]
-        }
-      });
-      return true;
-    } catch (err) {
-      return false;
-    }
-  };
+    skillsList = allSkills
+      .slice(0, 10)
+      .map((s) => {
+        const ns =
+          s.sourceType === "project"
+            ? "project:"
+            : s.sourceType === "personal"
+              ? ""
+              : "superpowers:";
+        return `${ns}${s.name || path.basename(s.path)}`;
+      })
+      .join(", ");
+  } catch (err) {
+    skillsList =
+      "brainstorming, project-kickoff, code-review, debugging, refactoring";
+  }
 
   return {
     tool: {
+      // Main skill loading tool with superpowers context embedded in description
       use_skill: tool({
-        description: 'Load and read a specific skill to guide your work. Skills contain proven workflows, mandatory processes, and expert techniques.',
+        description: `Load a skill to guide your work. YOU HAVE SUPERPOWERS - specialized skills for various tasks.
+
+AVAILABLE SKILLS: ${skillsList || "Run find_skills to see all"}
+
+USAGE: use_skill("superpowers:brainstorming") or use_skill("project:my-skill")
+
+TOOL MAPPING for OpenCode:
+- TodoWrite → update_plan
+- Task with subagents → @mention system
+- Skill tool → use_skill
+- File operations → Native OpenCode tools
+
+SKILLS PRIORITY: project: > personal > superpowers:`,
         args: {
-          skill_name: tool.schema.string().describe('Name of the skill to load (e.g., "superpowers:brainstorming", "my-custom-skill", or "project:my-skill")')
+          skill_name: tool.schema
+            .string()
+            .describe(
+              'Skill name with namespace (e.g., "superpowers:brainstorming", "project:my-skill")',
+            ),
         },
-        execute: async (args, context) => {
+        execute: async (args) => {
           const { skill_name } = args;
-
-          // Resolve with priority: project > personal > superpowers
-          // Check for project: prefix first
-          const forceProject = skill_name.startsWith('project:');
-          const actualSkillName = forceProject ? skill_name.replace(/^project:/, '') : skill_name;
-
+          const forceProject = skill_name.startsWith("project:");
+          const actualSkillName = skill_name.replace(
+            /^(project:|superpowers:|personal:)/,
+            "",
+          );
           let resolved = null;
 
-          // Try project skills first (if project: prefix or no prefix)
-          if (forceProject || !skill_name.startsWith('superpowers:')) {
-            const projectPath = path.join(projectSkillsDir, actualSkillName);
-            const projectSkillFile = path.join(projectPath, 'SKILL.md');
+          // Check project skills first
+          if (forceProject || !skill_name.startsWith("superpowers:")) {
+            const projectSkillFile = path.join(
+              projectSkillsDir,
+              actualSkillName,
+              "SKILL.md",
+            );
             if (fs.existsSync(projectSkillFile)) {
               resolved = {
                 skillFile: projectSkillFile,
-                sourceType: 'project',
-                skillPath: actualSkillName
+                sourceType: "project",
+                skillPath: actualSkillName,
               };
             }
           }
 
-          // Fall back to personal/superpowers resolution
+          // Then check superpowers/personal
           if (!resolved && !forceProject) {
-            resolved = skillsCore.resolveSkillPath(skill_name, superpowersSkillsDir, personalSkillsDir);
+            resolved = core.resolveSkillPath(
+              skill_name,
+              superpowersSkillsDir,
+              personalSkillsDir,
+            );
           }
 
           if (!resolved) {
-            return `Error: Skill "${skill_name}" not found.\n\nRun find_skills to see available skills.`;
+            return `❌ Skill "${skill_name}" not found.\n\nUse find_skills to see available skills.`;
           }
 
-          const fullContent = fs.readFileSync(resolved.skillFile, 'utf8');
-          const { name, description } = skillsCore.extractFrontmatter(resolved.skillFile);
-          const content = skillsCore.stripFrontmatter(fullContent);
-          const skillDirectory = path.dirname(resolved.skillFile);
-
-          const skillHeader = `# ${name || skill_name}
-# ${description || ''}
-# Supporting tools and docs are in ${skillDirectory}
-# ============================================`;
-
-          // Insert as user message with noReply for persistence across compaction
           try {
-            await client.session.prompt({
-              path: { id: context.sessionID },
-              body: {
-                noReply: true,
-                parts: [
-                  { type: "text", text: `Loading skill: ${name || skill_name}`, synthetic: true },
-                  { type: "text", text: `${skillHeader}\n\n${content}`, synthetic: true }
-                ]
-              }
-            });
+            const fullContent = fs.readFileSync(resolved.skillFile, "utf8");
+            const { name, description } = core.extractFrontmatter(
+              resolved.skillFile,
+            );
+            const content = core.stripFrontmatter(fullContent);
+
+            // Return content directly - no session.prompt injection
+            return `# 🎯 SKILL LOADED: ${name || skill_name}
+
+${description ? `**Description:** ${description}\n` : ""}
+**Source:** ${resolved.sourceType}
+**Path:** ${path.dirname(resolved.skillFile)}
+
+---
+
+${content}
+
+---
+✅ Follow the instructions above to complete this skill.`;
           } catch (err) {
-            // Fallback: return content directly if message insertion fails
-            return `${skillHeader}\n\n${content}`;
+            return `❌ Error loading skill: ${err.message}`;
           }
-
-          return `Launching skill: ${name || skill_name}`;
-        }
+        },
       }),
-      find_skills: tool({
-        description: 'List all available skills in the project, personal, and superpowers skill libraries.',
-        args: {},
-        execute: async (args, context) => {
-          const projectSkills = skillsCore.findSkillsInDir(projectSkillsDir, 'project', 3);
-          const personalSkills = skillsCore.findSkillsInDir(personalSkillsDir, 'personal', 3);
-          const superpowersSkills = skillsCore.findSkillsInDir(superpowersSkillsDir, 'superpowers', 3);
 
-          // Priority: project > personal > superpowers
-          const allSkills = [...projectSkills, ...personalSkills, ...superpowersSkills];
+      // Find skills tool
+      find_skills: tool({
+        description:
+          "List all available superpowers skills. Use this to discover what skills you can load with use_skill.",
+        args: {},
+        execute: async () => {
+          const projectSkills = core.findSkillsInDir(
+            projectSkillsDir,
+            "project",
+            3,
+          );
+          const personalSkills = core.findSkillsInDir(
+            personalSkillsDir,
+            "personal",
+            3,
+          );
+          const superpowersSkills = core.findSkillsInDir(
+            superpowersSkillsDir,
+            "superpowers",
+            3,
+          );
+          const allSkills = [
+            ...projectSkills,
+            ...personalSkills,
+            ...superpowersSkills,
+          ];
 
           if (allSkills.length === 0) {
-            return 'No skills found. Install superpowers skills to ~/.config/opencode/superpowers/skills/ or add project skills to .opencode/skills/';
+            return "❌ No skills found. Check if superpowers is installed at ~/.config/opencode/superpowers/";
           }
 
-          let output = 'Available skills:\n\n';
+          let output = `# 🦸 SUPERPOWERS SKILLS\n\n`;
+          output += `You have ${allSkills.length} skills available. Use \`use_skill("namespace:skill-name")\` to load one.\n\n`;
 
+          // Group by source
+          const grouped = { project: [], personal: [], superpowers: [] };
           for (const skill of allSkills) {
-            let namespace;
-            switch (skill.sourceType) {
-              case 'project':
-                namespace = 'project:';
-                break;
-              case 'personal':
-                namespace = '';
-                break;
-              default:
-                namespace = 'superpowers:';
-            }
-            const skillName = skill.name || path.basename(skill.path);
-
-            output += `${namespace}${skillName}\n`;
-            if (skill.description) {
-              output += `  ${skill.description}\n`;
-            }
-            output += `  Directory: ${skill.path}\n\n`;
+            grouped[skill.sourceType]?.push(skill);
           }
+
+          if (grouped.project.length > 0) {
+            output += `## 📁 Project Skills\n`;
+            for (const skill of grouped.project) {
+              output += `- **project:${skill.name || path.basename(skill.path)}** - ${skill.description || "No description"}\n`;
+            }
+            output += "\n";
+          }
+
+          if (grouped.personal.length > 0) {
+            output += `## 👤 Personal Skills\n`;
+            for (const skill of grouped.personal) {
+              output += `- **${skill.name || path.basename(skill.path)}** - ${skill.description || "No description"}\n`;
+            }
+            output += "\n";
+          }
+
+          if (grouped.superpowers.length > 0) {
+            output += `## 🦸 Superpowers Skills\n`;
+            for (const skill of grouped.superpowers) {
+              output += `- **superpowers:${skill.name || path.basename(skill.path)}** - ${skill.description || "No description"}\n`;
+            }
+            output += "\n";
+          }
+
+          output += `---\n💡 **Tip:** Use \`use_skill("superpowers:brainstorming")\` to load a skill.`;
 
           return output;
-        }
-      })
+        },
+      }),
+
+      // Quick superpowers info
+      superpowers_info: tool({
+        description: "Get quick info about your superpowers capabilities.",
+        args: {},
+        execute: async () => {
+          const projectSkills = core.findSkillsInDir(
+            projectSkillsDir,
+            "project",
+            3,
+          );
+          const personalSkills = core.findSkillsInDir(
+            personalSkillsDir,
+            "personal",
+            3,
+          );
+          const superpowersSkills = core.findSkillsInDir(
+            superpowersSkillsDir,
+            "superpowers",
+            3,
+          );
+
+          return `# 🦸 SUPERPOWERS ACTIVE
+
+You have superpowers! Here's what you can do:
+
+## Available Skills
+- **Project:** ${projectSkills.length} skills
+- **Personal:** ${personalSkills.length} skills
+- **Superpowers:** ${superpowersSkills.length} skills
+
+## Quick Commands
+- \`find_skills\` - List all available skills
+- \`use_skill("superpowers:brainstorming")\` - Load a skill
+- \`use_skill("superpowers:code-review")\` - Code review skill
+- \`use_skill("superpowers:debugging")\` - Debugging skill
+
+## Tool Mapping
+| Claude Code | OpenCode |
+|-------------|----------|
+| TodoWrite | update_plan |
+| Task | @mention |
+| Skill | use_skill |
+
+🚀 Ready to use superpowers!`;
+        },
+      }),
     },
-    event: async ({ event }) => {
-      // Extract sessionID from various event structures
-      const getSessionID = () => {
-        return event.properties?.info?.id ||
-               event.properties?.sessionID ||
-               event.session?.id;
-      };
-
-      // Inject bootstrap at session creation (before first user message)
-      if (event.type === 'session.created') {
-        const sessionID = getSessionID();
-        if (sessionID) {
-          await injectBootstrap(sessionID, false);
-        }
-      }
-
-      // Re-inject bootstrap after context compaction (compact version to save tokens)
-      if (event.type === 'session.compacted') {
-        const sessionID = getSessionID();
-        if (sessionID) {
-          await injectBootstrap(sessionID, true);
-        }
-      }
-    }
+    // NOTE: No event handlers - avoiding client.session.prompt() which causes thinking model errors
   };
 };

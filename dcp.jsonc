@@ -1,0 +1,52 @@
+{
+  // Enable or disable the plugin
+  "enabled": false,
+  // Enable debug logging
+  "debug": false,
+  // Notification display: "off", "minimal", or "detailed"
+  "pruneNotification": "detailed",
+  // Protect from pruning for <turns> message turns
+  "turnProtection": {
+    "enabled": false,
+    "turns": 4
+  },
+  // LLM-driven context pruning tools
+  "tools": {
+    // Shared settings for all prune tools
+    "settings": {
+      // Nudge the LLM to use prune tools
+      "nudgeEnabled": true,
+      "nudgeFrequency": 10,
+      // Additional tools to protect from pruning
+      "protectedTools": []
+    },
+    // Removes tool content from context without preservation
+    "discard": {
+      "enabled": true
+    },
+    // Distills key findings into preserved knowledge
+    "extract": {
+      "enabled": true,
+      "showDistillation": false
+    }
+  },
+  // Automatic pruning strategies
+  "strategies": {
+    // Remove duplicate tool calls
+    "deduplication": {
+      "enabled": true,
+      "protectedTools": []
+    },
+    // Prune write tool inputs when file has been subsequently read
+    "supersedeWrites": {
+      "enabled": true
+    },
+    // (Legacy) Run an LLM to analyze on idle
+    "onIdle": {
+      "enabled": false,
+      "protectedTools": [],
+      "showModelErrorToasts": true,
+      "strictModelSelection": false
+    }
+  }
+}

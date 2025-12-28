@@ -1,5 +1,35 @@
 # Superpowers Release Notes
 
+## v4.0.2 (2025-12-23)
+
+### Fixes
+
+**Slash commands now user-only**
+
+Added `disable-model-invocation: true` to all three slash commands (`/brainstorm`, `/execute-plan`, `/write-plan`). Claude can no longer invoke these commands via the Skill tool—they're restricted to manual user invocation only.
+
+The underlying skills (`superpowers:brainstorming`, `superpowers:executing-plans`, `superpowers:writing-plans`) remain available for Claude to invoke autonomously. This change prevents confusion when Claude would invoke a command that just redirects to a skill anyway.
+
+## v4.0.1 (2025-12-23)
+
+### Fixes
+
+**Clarified how to access skills in Claude Code**
+
+Fixed a confusing pattern where Claude would invoke a skill via the Skill tool, then try to Read the skill file separately. The `using-superpowers` skill now explicitly states that the Skill tool loads skill content directly—no need to read files.
+
+- Added "How to Access Skills" section to `using-superpowers`
+- Changed "read the skill" → "invoke the skill" in instructions
+- Updated slash commands to use fully qualified skill names (e.g., `superpowers:brainstorming`)
+
+**Added GitHub thread reply guidance to receiving-code-review** (h/t @ralphbean)
+
+Added a note about replying to inline review comments in the original thread rather than as top-level PR comments.
+
+**Added automation-over-documentation guidance to writing-skills** (h/t @EthanJStark)
+
+Added guidance that mechanical constraints should be automated, not documented—save skills for judgment calls.
+
 ## v4.0.0 (2025-12-17)
 
 ### New Features
