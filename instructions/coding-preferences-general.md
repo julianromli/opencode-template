@@ -20,3 +20,7 @@ Follow the SOLID principles when coding:
 # Global Agent Rules
 
 - **Environment Files Safety:** ALWAYS use the `fs_read` and `fs_write` tools when accessing or modifying `.env`, `.env.local`, `.env.example`, or any other sensitive environment configuration files. NEVER use the basic `read` or `edit` tools for these files to avoid permission issues and ensure proper handling of sensitive data.
+
+- Always use Ref MCP and Exa MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
+
+- **Supabase MCP Usage:** ALWAYS proactively use Supabase MCP tools when handling any database-related tasks including reading data, writing data, analyzing schemas, querying tables, managing migrations, or any other database operations without requiring explicit instruction from the user.
