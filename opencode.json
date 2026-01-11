@@ -1,0 +1,556 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "username": "FAIZ",
+  "autoupdate": true,
+  "plugin": [
+    "opencode-openai-codex-auth@4.2.0",
+    "opencode-antigravity-auth@1.2.6",
+    "@nick-vi/opencode-type-inject@1.3.1",
+    "@franlol/opencode-md-table-formatter@0.0.3"
+  ],
+  "instructions": ["./instructions/*.md"],
+  "tui": {
+    "scroll_speed": 3,
+    "scroll_acceleration": {
+      "enabled": true
+    },
+    "diff_style": "auto"
+  },
+  "tools": {
+    "bash": true,
+    "read": true,
+    "write": true,
+    "edit": true,
+    "glob": true,
+    "grep": true,
+    "list": true,
+    "webfetch": false,
+    "task": true,
+    "todowrite": true,
+    "todoread": true,
+    "question": true
+  },
+  "compaction": {
+    "auto": true,
+    "prune": false
+  },
+  "watcher": {
+    "ignore": ["node_modules/**", "dist/**", ".git/**"]
+  },
+  "permission": {
+    "bash": {
+      "make *": "allow",
+      "echo *": "allow",
+      "grep *": "allow",
+      "cat *": "allow"
+    }
+  },
+  "mcp": {
+    "zai-mcp-server": {
+      "type": "local",
+      "command": ["npx", "-y", "@z_ai/mcp-server"],
+      "timeout": 60000,
+      "environment": {
+        "Z_AI_API_KEY": "",
+        "Z_AI_MODE": "ZAI"
+      }
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": ""
+      },
+      "enabled": true,
+      "timeout": 60000
+    },
+    "next-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "next-devtools-mcp@latest"],
+      "enabled": true,
+      "timeout": 60000
+    },
+    "Ref": {
+      "type": "remote",
+      "url": "https://api.ref.tools/mcp?apiKey=ref-458b34e9855ea394143a",
+      "enabled": false,
+      "timeout": 60000
+    },
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,get_code_context_exa,crawling_exa,company_research_exa,linkedin_search_exa,deep_researcher_start,deep_researcher_check",
+      "enabled": false,
+      "timeout": 60000,
+      "headers": {
+        "EXA_API_KEY": "{env:EXA_API_KEY}"
+      }
+    },
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=zxyequaeestijzerrcrx&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage",
+      "enabled": false,
+      "timeout": 60000,
+      "headers": {
+        "Authorization": "Bearer ACCESS_TOKEN"
+      }
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"],
+      "enabled": false,
+      "timeout": 60000
+    },
+    "kibo-ui": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "mcp-remote",
+        "https://www.kibo-ui.com/api/mcp/mcp"
+      ],
+      "enabled": false,
+      "timeout": 60000
+    },
+    "firecrawl-mcp": {
+      "type": "local",
+      "command": ["npx", "-y", "firecrawl-mcp"],
+      "environment": {
+        "FIRECRAWL_API_KEY": ""
+      },
+      "enabled": true,
+      "timeout": 60000
+    },
+    "morph-mcp": {
+      "type": "local",
+      "command": ["npx", "-y", "@morphllm/morphmcp"],
+      "environment": {
+        "MORPH_API_KEY": "",
+        "ENABLED_TOOLS": "edit_file,warpgrep_codebase_search"
+      },
+      "timeout": 60000
+    }
+  },
+  "provider": {
+    "openai": {
+      "options": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "textVerbosity": "medium",
+        "include": ["reasoning.encrypted_content"],
+        "store": false
+      },
+      "models": {
+        "gpt-5.2": {
+          "name": "GPT 5.2 (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.2-codex": {
+          "name": "GPT 5.2 Codex (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1-codex-max": {
+          "name": "GPT 5.1 Codex Max (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1-codex": {
+          "name": "GPT 5.1 Codex (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1-codex-mini": {
+          "name": "GPT 5.1 Codex Mini (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1": {
+          "name": "GPT 5.1 (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "high"
+            }
+          }
+        }
+      }
+    },
+    "google": {
+      "models": {
+        "gemini-3-pro-high": {
+          "name": "Gemini 3 Pro High (Antigravity)",
+          "limit": {
+            "context": 1048576,
+            "output": 65535
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        },
+        "gemini-3-pro-low": {
+          "name": "Gemini 3 Pro Low (Antigravity)",
+          "limit": {
+            "context": 1048576,
+            "output": 65535
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        },
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash (Antigravity)",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        },
+        "claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5 (Antigravity)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        },
+        "claude-sonnet-4-5-thinking": {
+          "name": "Claude Sonnet 4.5 Thinking (Antigravity)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        },
+        "claude-opus-4-5-thinking": {
+          "name": "Claude Opus 4.5 Thinking (Antigravity)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        },
+        "gpt-oss-120b-medium": {
+          "name": "GPT-OSS 120B Medium (Antigravity)",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          }
+        }
+      }
+    },
+    "cliproxy": {
+      "npm": "@ai-sdk/anthropic",
+      "options": {
+        "baseURL": "https://api.vibe-dev.web.id/v1",
+        "apiKey": "vibedevid-SJC4FESvmifFhJE6jC1xPIR5hQRYDCRG"
+      },
+      "models": {
+        "claude-opus-4-5-thinking": {
+          "name": "Claude Opus 4.5 Thinking [AG Cliproxy]",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "textVerbosity": "none"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "textVerbosity": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "textVerbosity": "high"
+            }
+          }
+        },
+        "claude-sonnet-4-5-thinking": {
+          "name": "Claude Sonnet 4.5 Thinking [AG Cliproxy]",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "textVerbosity": "none"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "textVerbosity": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "textVerbosity": "high"
+            }
+          }
+        },
+        "gemini-claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5 [Antigravity]"
+        },
+        "gemini-3-pro-preview": {
+          "name": "Gemini 3 Pro Preview [Antigravity]",
+          "modalities": {
+            "input": ["text", "image", "pdf", "video"],
+            "output": ["text"]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "textVerbosity": "none"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "textVerbosity": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "textVerbosity": "high"
+            }
+          }
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview [Antigravity]",
+          "modalities": {
+            "input": ["text", "image", "pdf", "video"],
+            "output": ["text"]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "textVerbosity": "none"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "textVerbosity": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "textVerbosity": "high"
+            }
+          }
+        },
+        "gemini-3-pro-image-preview": {
+          "name": "Gemini 3 Pro Image Preview [Antigravity]"
+        },
+        "kiro-claude-opus-4-5-agentic": {
+          "name": "Kiro Claude Opus 4.5 Agentic [Antigravity]"
+        },
+        "gpt-5.2-codex(xhigh)": {
+          "name": "GPT 5.2 Codex xhigh [Antigravity]"
+        }
+      }
+    },
+    "minimax": {
+      "npm": "@ai-sdk/anthropic",
+      "options": {
+        "baseURL": "https://api.minimax.io/anthropic/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "MiniMax-M2.1": {
+          "name": "MiniMax-M2.1 (Anthropic)"
+        }
+      }
+    }
+  }
+}
