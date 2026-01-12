@@ -72,7 +72,7 @@
     },
     "Ref": {
       "type": "remote",
-      "url": "https://api.ref.tools/mcp?apiKey=ref-458b34e9855ea394143a",
+      "url": "https://api.ref.tools/mcp?apiKey=ref-",
       "enabled": false,
       "timeout": 60000
     },
