@@ -415,7 +415,7 @@
       "npm": "@ai-sdk/anthropic",
       "options": {
         "baseURL": "https://api.vibe-dev.web.id/v1",
-        "apiKey": "vibedevid-SJC4FESvmifFhJE6jC1xPIR5hQRYDCRG"
+        "apiKey": "vibedevid.com"
       },
       "models": {
         "claude-opus-4-5-thinking": {
