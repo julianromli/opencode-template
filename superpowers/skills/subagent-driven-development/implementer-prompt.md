@@ -3,7 +3,14 @@
 Use this template when dispatching an implementer subagent.
 
 ```
-Task tool (general-purpose):
+Task tool:
+  # AGENT SELECTION GUIDE - Choose the most specific agent:
+  # - frontend-developer   -> React, Next.js, UI, Tailwind, Components
+  # - backend-specialist   -> APIs, Database, Auth, Server Logic
+  # - backend-architect    -> API Design, Schema Modeling, System Arch
+  # - typescript-pro       -> Advanced Types, Generics, Strict Safety
+  # - general              -> Complex logic, Research, Mixed tasks
+  subagent_type: "[INSERT CHOSEN AGENT TYPE]"
   description: "Implement Task N: [task name]"
   prompt: |
     You are implementing Task N: [task name]
