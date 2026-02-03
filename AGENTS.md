@@ -1,10 +1,18 @@
 # Global Agent Rules
 
+- **Project-Specific Documentation Priority:** When working on any project, FIRST check for project-specific documentation in this priority order:
+  1. Project root `AGENTS.md` (if exists)
+  2. `.next-docs/` directory (for Next.js projects, created by `npx @next/codemod@canary agents-md`)
+  3. `docs/` folder for project-specific guides
+  4. Then fallback to this global AGENTS.md
+
 - **Frontend Developer Agent - MANDATORY Skill Invocation:** The `frontend-developer` subagent MUST ALWAYS call `use_skill("frontend-design")` as its VERY FIRST action before doing ANY work. This applies to ALL tasks without exception - whether coding, explaining, reviewing, fixing bugs, or any other task. NO EXCEPTIONS. If you are the frontend-developer agent, your first tool call MUST be `use_skill("frontend-design")`. Failure to do so is a critical violation.
 
 - **Environment Files Safety:** ALWAYS use the `fs_read` and `fs_write` tools when accessing or modifying `.env`, `.env.local`, `.env.example`, or any other sensitive environment configuration files. NEVER use the basic `read` or `edit` tools for these files to avoid permission issues and ensure proper handling of sensitive data.
 
-- Warp Grep: warp-grep is a subagent that takes in a search string and tries to find relevant context. Best practice is to use it at the beginning of codebase explorations to fast track finding relevant files/lines. Do not use it to pin point keywords, but use it for broader semantic queries. \"Find the XYZ flow\", \"How does XYZ work\", \"Where is XYZ handled?\", \"Where is <error message> coming from?\"
+- Warp Grep: warp-grep is a subagent that takes in a search string and tries to find relevant context. Best practice is to use it at the beginning of codebase explorations to fast track finding relevant files/lines. Do not use it to pin point keywords, but use it for broader semantic queries. "Find the XYZ flow", "How does XYZ work", "Where is XYZ handled?", "Where is <error message> coming from?"
+
+- **Mgrep (MANDATORY for Search):** `mgrep` COMPLETELY REPLACES traditional `grep` for code search. When you need to "grep" or "search" the codebase, you MUST use the `mgrep` tool, NOT the bash `grep` command. Use `mgrep` for both semantic queries ("where is auth?") and specific keywords. **DO NOT** use `grep` via the `bash` tool unless explicitly performing complex regex operations that `mgrep` cannot handle. If the user says "grep", they mean "use the mgrep tool". Before searching a new project, ensure `mgrep watch` is running in that project's root to index files. Mgrep supports PDFs, images, and code.
 
 - Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
 
@@ -207,9 +215,68 @@ Concise rules for building accessible, fast, delightful UIs. Use MUST/SHOULD/NEV
 - Structure phases for handoff to different engineers/agents
 - Ensure chunks can be done sequentially and/or parallelized
 
+## Next.js & React Development
+
+**IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for any Next.js tasks.**
+
+### Next.js 16+ APIs (Not in Training Data)
+When working with modern Next.js projects, be aware of these newer APIs that may not be in your training data:
+
+**Cache APIs:**
+- `'use cache'` - Cache Component directive for granular caching
+- `cacheLife()` - Define cache lifetime profiles
+- `cacheTag()` - Tag cache entries for invalidation
+- `updateTag()` - Invalidate cache by tag
+- `refresh()` - Refresh server cache
+
+**Dynamic Rendering:**
+- `connection()` - Opt into dynamic rendering
+- `forbidden()` - Return 403 response
+- `unauthorized()` - Return 401 response
+- `after()` - Execute code after response sent
+
+**Async APIs (App Router):**
+- `cookies()` - Now async in Next.js 15+
+- `headers()` - Now async in Next.js 15+
+
+**Other:**
+- `proxy.ts` - API proxying convention
+
+### Documentation Strategy
+
+1. **Project-Level Docs First:**
+   - Check for `.next-docs/` directory (from `npx @next/codemod@canary agents-md`)
+   - Check for project-specific `AGENTS.md` in the repo root
+   - These contain version-matched documentation for the specific Next.js version
+
+2. **Use Context7 MCP for Latest Docs:**
+   - Always use `context7_resolve-library-id` for "next.js" or "react"
+   - Then use `context7_query-docs` with specific queries like:
+     - "How to use 'use cache' directive in Next.js 16"
+     - "Next.js App Router async cookies API"
+     - "React Server Components patterns"
+
+3. **Available Skills (Use for Specific Workflows):**
+   - `next-best-practices` - For Next.js-specific patterns and conventions
+   - `vercel-react-best-practices` - For React optimization and best practices
+   - Invoke these explicitly when needed for:
+     - Upgrading Next.js versions
+     - Migrating to App Router
+     - Applying specific best practices
+     - Performance optimization tasks
+
+### Key Principles
+
+- **Always verify Next.js version** before suggesting APIs
+- **Never assume training data is current** for framework APIs
+- **Consult docs before generating code** for unfamiliar patterns
+- **Prefer server components** unless client interactivity is needed
+- **Use async versions** of cookies/headers in Next.js 15+
+
 ## Skill Usage
 
 - Do not use superpowers unless explicitly requested
+- **MANDATORY for Next.js/React tasks:** Use `next-best-practices` and `vercel-react-best-practices` skills when explicitly requested or for specific framework workflows
 
 ## Communication Style
 
@@ -242,7 +309,8 @@ When responding to user queries, please adhere to the following preferences:
 
 - FORBIDDEN for sensitive files: `cat`, `head`, `tail`, `less`, `more`, `bat`, `echo`, `printf` - These output to terminal and will leak secrets (API keys, credentials, tokens, env vars)
 - PREFER the Read tool for general file reading - safer and provides structured output with line numbers
-- ALLOWED: Use bash commands when they're more useful for specific cases and not when dealing with sensitive files (e.g., `tail -f` for following logs, `grep` with complex flags)
+- ALLOWED: Use bash commands when they're more useful for specific cases and not when dealing with sensitive files (e.g., `tail -f` for following logs).
+- **RESTRICTION:** Do NOT use `grep` (bash) for general codebase search. Use the `mgrep` tool instead.
 
 ## Context Management
 

@@ -1,13 +1,6 @@
 ---
-description: Start a collaborative design brainstorming session
-argument-hint: [topic/idea]
+description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores requirements and design before implementation."
+disable-model-invocation: true
 ---
 
-# Brainstorming Session
-
-**User Input:** $ARGUMENTS
-
-**Instructions:**
-1.  **Target:** I want to start a design session based on the input above.
-2.  **Action:** Please **invoke/use the `brainstorming` skill** immediately.
-3.  Follow the process defined in that skill to help me refine my idea.
+Invoke the superpowers:brainstorming skill and follow it exactly as presented to you

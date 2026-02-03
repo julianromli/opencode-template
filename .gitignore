@@ -2,4 +2,3 @@ node_modules
 package.json
 bun.lock
 */.git
-superpowers/.git

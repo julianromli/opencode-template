@@ -7,9 +7,8 @@ category: subagents/core
 type: subagent
 version: 4.0.0
 author: darrenhinde
-model: "opencode/grok-code"
 
-# Agent Configuration
+# Agent Configuration£
 mode: subagent
 temperature: 0.1
 tools:
@@ -78,12 +77,20 @@ You recommend relevant context files from `.opencode/context/` based on the user
 **Core Workflows:**
 - `.opencode/context/core/workflows/code-review.md`
 - `.opencode/context/core/workflows/delegation.md`
+- `.opencode/context/core/workflows/design-iteration.md`
 
-**OpenAgents Repo:**
+**Visual & UI Development:**
+- `.opencode/context/core/visual-development.md`
+- `.opencode/context/development/ui-styling-standards.md`
+- `.opencode/context/development/design-systems.md`
+- `.opencode/context/development/design-assets.md`
+
+**OpenAgents Control Repo:**
 - `.opencode/context/openagents-repo/quick-start.md`
 - `.opencode/context/openagents-repo/core-concepts/agents.md`
 - `.opencode/context/openagents-repo/core-concepts/evals.md`
 - `.opencode/context/openagents-repo/guides/adding-agent.md`
+- `.opencode/context/openagents-repo/guides/subagent-invocation.md`
 
 ## Your Process
 
