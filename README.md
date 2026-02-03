@@ -341,9 +341,177 @@ Check:
 3. Make changes with clear commits
 4. Submit pull request with description
 
+## Model Context Protocol (MCP)
+
+### What is MCP?
+
+**Model Context Protocol (MCP)** is an open protocol that standardizes how applications provide context to large language models (LLMs). It enables AI applications to connect with various data sources and tools in a consistent, structured manner.
+
+### MCP Architecture
+
+MCP follows a client-server architecture:
+
+- **MCP Hosts**: Applications like AI assistants or IDEs (e.g., OpenCode CLI)
+- **MCP Clients**: Connectors within the host that maintain 1:1 connections with servers
+- **MCP Servers**: Services that provide context, tools, and capabilities through the standardized protocol
+
+### Available MCP Integrations
+
+OpenCode CLI supports various MCP servers that extend AI capabilities:
+
+#### 1. **Context7 MCP** (`mcp_context7`)
+**Purpose**: Up-to-date library documentation and code examples
+
+**Tools**:
+- `resolve-library-id`: Find Context7-compatible library IDs (e.g., `/mongodb/docs`, `/vercel/next.js`)
+- `query-docs`: Query documentation with specific questions
+
+**Use Cases**:
+- Getting latest API documentation
+- Finding code examples for libraries
+- Learning framework-specific patterns
+- Checking version-specific features
+
+**Example**:
+```bash
+# First resolve library ID
+resolve-library-id libraryName="next.js" query="Next.js documentation"
+
+# Then query specific docs
+query-docs libraryId="/vercel/next.js" query="How to use App Router in Next.js 15"
+```
+
+#### 2. **Exa Web Search MCP** (`mcp_exa`)
+**Purpose**: Advanced web search and research capabilities
+
+**Tools**:
+- `exa`: General web search with clean, LLM-ready content
+- `company_research_exa`: Research companies and business information
+- `crawling_exa`: Extract content from specific URLs
+- `get_code_context_exa`: Find code examples and documentation
+- `deep_researcher_start`: Start AI research agent for complex topics
+- `deep_researcher_check`: Check research task status and results
+
+**Use Cases**:
+- Finding current information and news
+- Researching companies and technologies
+- Extracting content from web pages
+- Finding code examples from GitHub/Stack Overflow
+- Deep research on complex topics
+
+**Example**:
+```bash
+# Web search
+exa query="Next.js 15 new features" numResults=5
+
+# Code search
+get_code_context_exa query="React Server Components examples" tokensNum=5000
+
+# Deep research
+deep_researcher_start instructions="Research best practices for microservices architecture"
+```
+
+#### 3. **Next.js DevTools MCP** (`mcp_next_devtools`)
+**Purpose**: Next.js development server integration and diagnostics
+
+**Tools**:
+- `init`: Initialize Next.js DevTools context
+- `nextjs_docs`: Fetch official Next.js documentation
+- `nextjs_index`: Discover running Next.js dev servers and available tools
+- `nextjs_call`: Call specific MCP tools on running dev server
+- `browser_eval`: Browser automation for testing
+- `upgrade_nextjs_16`: Guide for upgrading to Next.js 16
+- `enable_cache_components`: Migrate to Cache Components mode
+
+**Use Cases**:
+- Real-time Next.js error diagnostics
+- Querying running dev server state
+- Browser-based page verification
+- Next.js version upgrades
+- Cache Components migration
+
+**Example**:
+```bash
+# Initialize
+init project_path="."
+
+# Get errors from running dev server
+nextjs_index
+nextjs_call port="3000" toolName="get_errors"
+
+# Query Next.js docs
+nextjs_docs path="/docs/app/api-reference/functions/refresh"
+```
+
+### Configuring MCP Servers
+
+MCP servers are configured in `.kiro/settings/mcp.json` (workspace-level) or `~/.kiro/settings/mcp.json` (user-level):
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "uvx",
+      "args": ["context7-mcp-server@latest"],
+      "disabled": false,
+      "autoApprove": ["resolve-library-id", "query-docs"]
+    },
+    "exa": {
+      "command": "uvx",
+      "args": ["exa-mcp-server@latest"],
+      "env": {
+        "EXA_API_KEY": "your-api-key-here"
+      },
+      "disabled": false
+    }
+  }
+}
+```
+
+### MCP Best Practices
+
+1. **Always call `resolve-library-id` before `query-docs`** (Context7)
+2. **Limit MCP calls to 3 per question** to avoid excessive API usage
+3. **Use specific queries** - "How to set up JWT auth in Express" not just "auth"
+4. **Check dev server status** before calling Next.js MCP tools
+5. **Use browser automation** for real page verification (not curl)
+
+### Installing MCP Servers
+
+Most MCP servers use `uvx` (Python package runner):
+
+```bash
+# Install uv (Python package manager)
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Once installed, uvx will auto-download MCP servers on first use
+```
+
+### Troubleshooting MCP
+
+**Server not connecting:**
+- Check MCP config file syntax
+- Verify `uvx` is installed
+- Check server logs in OpenCode output
+
+**Tools not available:**
+- Restart OpenCode after config changes
+- Check `disabled: false` in config
+- Verify API keys for services that require them
+
+**Performance issues:**
+- Limit concurrent MCP calls
+- Use specific queries to reduce response size
+- Consider caching frequently accessed data
+
 ## Resources
 
 - **OpenCode Documentation**: [Official Docs]
+- **MCP Official Site**: https://modelcontextprotocol.io
 - **Agent Examples**: See `agent/` directory
 - **Skill Examples**: See `skill/` directory
 - **Command Examples**: See `command/` directory
@@ -358,6 +526,7 @@ For issues and questions:
 - Open an issue on GitHub
 - Check existing documentation in `docs/` directories
 - Review skill-specific README files
+- Visit MCP documentation for protocol-specific questions
 
 ---
 
