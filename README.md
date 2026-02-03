@@ -12,19 +12,61 @@ OpenCode is an AI-powered development CLI that helps you build software faster t
 
 ## Quick Start
 
+### Prerequisites
+
+- OpenCode CLI installed
+- Node.js 18+ (for MCP servers)
+- Git
+
 ### Installation
 
 1. Install OpenCode CLI (if not already installed)
+
 2. Clone this template:
 ```bash
 git clone https://github.com/julianromli/opencode-template.git
 cd opencode-template
 ```
 
-3. Initialize your project:
+3. **Setup Environment Variables (IMPORTANT)**:
+
+   **Windows (PowerShell as Administrator):**
+   ```powershell
+   cd scripts
+   .\setup-env-windows.ps1
+   ```
+
+   **macOS/Linux:**
+   ```bash
+   cd scripts
+   bash setup-env-mac.sh
+   source ~/.zshrc  # or ~/.bashrc
+   ```
+
+   See `scripts/README.md` for detailed instructions and troubleshooting.
+
+4. Initialize your project:
 ```bash
 opencode init
 ```
+
+5. Restart your terminal or IDE for environment variables to take effect
+
+### Required Environment Variables
+
+The setup scripts configure these essential variables:
+
+```bash
+OPENCODE_EXPERIMENTAL_PLAN_MODE=1    # Enable experimental features
+OPENCODE_UNSAFE_ALLOW_OUTSIDE=1      # Allow operations outside workspace
+OPENCODE_UNSAFE_FILES=1              # Enable file operations
+OPENCODE_UNSAFE_INCLUDE_GIT=1        # Enable git operations
+```
+
+**Why these are needed:**
+- Enable advanced OpenCode features
+- Allow AI agents to perform file and git operations
+- Required for full template functionality
 
 ### Basic Usage
 
